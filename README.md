@@ -7,7 +7,7 @@
 ### 1. Battery Logic & Control
 *   Fundamental EV calculations (Watt-hour capacity, C-rate).
 *   Charging control loops (CC/CV simulation).
-*   Basic Series-Parallel circuit modeling.
+*   Basic circuit modeling.
 
 ### 2. Signal Processing & Simulation
 *   Synthetic sensor data generation with Gaussian noise injection.
