@@ -15,16 +15,27 @@
 *   Li-ion discharge curve modeling with UVLO (Under-Voltage Lockout).
 
 ### 3. Real-World Data Analytics
-*   **Pandas** ingestion of CSV sensor logs (Voltage, Current, Temp).
-*   Thermal event detection filters (e.g., T > 30°C).
-*   Derived Metrics: Calculated Instantaneous **Power (W)** and **Total Energy (Wh)** from raw logs.
-*   Multi-plot visualization for battery diagnostics.
+**A. Sensor Log Diagnostics (Pandas)**
+*   Ingestion of time-series CSV sensor logs (Voltage, Current, Temp).
+*   Thermal event detection filters (e.g., T > 30°C) to identify safety risks.
+*   Calculated derived physics metrics: Instantaneous **Power (W)** and **Total Energy (Wh)**.
+
+**B. NASA PCoE Battery Research (Advanced)**
+*   **MATLAB Bridge:** Built a custom parser using `scipy.io` to mine data from nested NASA `.mat` structs.
+*   **SOH Estimator:** Algorithmically extracted specific discharge cycles and implemented **numerical integration (Trapezoidal Rule)** to calculate Total Capacity (Ah).
+*   **Degradation Analysis:** Visualized voltage relaxation effects and capacity fade compared to rated specifications (SOH%).
+*   **Dashboard:** 3-View subplot visualizing synchronized V/I/T thermodynamic profiles.
 
 ## 🛠 Tools Used
 *   **Language:** Python 3.12+
-*   **Libraries:** NumPy, Pandas, Matplotlib
+*   **Libraries:** NumPy, Pandas, Matplotlib, SciPy
 *   **Environment:** Jupyter Notebook / Anaconda
 
 ---
 **Author:** Ohi
+**Status:** Active Development
+
+## 📚 Dataset Reference
+*   **Source:** NASA Prognostics Center of Excellence (PCoE)
+*   **Citation:** B. Saha and K. Goebel (2007). "Battery Data Set", NASA Prognostics Data Repository, NASA Ames Research Center, Moffett Field, CA.
 **Status:** Active Development
