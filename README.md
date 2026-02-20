@@ -25,6 +25,7 @@
 *   **SOH Estimator:** Algorithmically extracted specific discharge cycles and implemented **numerical integration (Trapezoidal Rule)** to calculate Total Capacity (Ah).
 *   **Degradation Analysis:** Visualized voltage relaxation effects and capacity fade compared to rated specifications (SOH%).
 *   **Dashboard:** 3-View subplot visualizing synchronized V/I/T thermodynamic profiles.
+*   **Lifecycle Aging Analysis:** Generated the complete **Capacity Degradation Curve** across 168 cycles, successfully identifying the **End-of-Life (EOL)** point and characterizing **Capacity Regeneration** phenomena during rest periods.
 
 ## 🛠 Tools Used
 *   **Language:** Python 3.12+
