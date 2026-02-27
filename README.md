@@ -27,6 +27,11 @@
 *   **Dashboard:** 3-View subplot visualizing synchronized V/I/T thermodynamic profiles.
 *   **Lifecycle Aging Analysis:** Generated the complete **Capacity Degradation Curve** across 168 cycles, successfully identifying the **End-of-Life (EOL)** point and characterizing **Capacity Regeneration** phenomena during rest periods.
 
+### 4. Predictive Maintenance (Scalability & Machine Learning)
+*   **Automated Batch Processing:** Created Python functions to dynamically parse and aggregate data from multiple battery datasets simultaneously.
+*   **Comparative Analysis:** Analyzed performance variance across different physical cells to identify "Strong" vs "Weak" batteries.
+*   **Remaining Useful Life (RUL) Prediction:** Integrated linear regression algorithms to forecast the precise cycle number where battery health will cross the critical 70% threshold.
+*   
 ## 🛠 Tools Used
 *   **Language:** Python 3.12+
 *   **Libraries:** NumPy, Pandas, Matplotlib, SciPy
@@ -37,6 +42,6 @@
 **Status:** Active Development
 
 ## 📚 Dataset Reference
-*   **Source:** NASA Prognostics Center of Excellence (PCoE)
+*   **Source:** [NASA Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)
+*   **Dataset:** "6. Li-ion Battery Aging Datasets"
 *   **Citation:** B. Saha and K. Goebel (2007). "Battery Data Set", NASA Prognostics Data Repository, NASA Ames Research Center, Moffett Field, CA.
-**Status:** Active Development
