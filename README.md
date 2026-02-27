@@ -43,5 +43,5 @@
 
 ## 📚 Dataset Reference
 *   **Source:** [NASA Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)
-*   **Dataset:** "6. Li-ion Battery Aging Datasets"
+*   **Dataset:** "5. Batteries" (Experimental Li-ion Battery Aging Data Set)
 *   **Citation:** B. Saha and K. Goebel (2007). "Battery Data Set", NASA Prognostics Data Repository, NASA Ames Research Center, Moffett Field, CA.
