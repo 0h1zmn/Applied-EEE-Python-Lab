@@ -13,6 +13,7 @@
 *   Synthetic sensor data generation with Gaussian noise injection.
 *   Fault detection algorithms (Over-current logic).
 *   Li-ion discharge curve modeling with UVLO (Under-Voltage Lockout).
+*   **Active Balancing Algorithm:** Simulated a logic controller for 4S configuration to equalize voltage imbalances with tunable efficiency parameters ($\eta$).
 
 ### 3. Real-World Data Analytics
 **A. Sensor Log Diagnostics (Pandas)**
