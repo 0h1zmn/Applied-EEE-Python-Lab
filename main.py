@@ -17,17 +17,14 @@ This dashboard consolidates your previous Jupyter Notebook experiments into one 
 1. **Sensor Readings & Noise**: 
    - Simulate a Li-ion battery discharge curve.
    - Inject interactive random noise into current sensor readings and track fault times.
-2. **Battery Data Analysis** (Coming Soon):
-   - Analyze dataset logs and identify battery degradation patterns.
-3. **Active Balancing Logic** (Coming Soon):
-   - Explore how different cells in a battery pack balance their voltages over time.
-
----
-**How to run locally:**
-```bash
-pip install -r requirements.txt
-streamlit run main.py
-```
+2. **Battery Data Analysis**:
+   - Analyze CSV telemetry logs (Temperature, Voltage, Power).
+   - Extract and interact with NASA `.mat` battery cycle datasets.
+3. **Active Balancing Logic**:
+   - Explore how different cells in a battery pack balance their voltages interactively over time with Plotly point animations.
+4. **Comparative Analysis**:
+   - Compare degradation patterns across multiple NASA battery datasets.
+   - Run live linear regression to predict End of Life (EOL) cycles based on custom thresholds!
 """)
 
 # Check for required data files or show a welcoming metric
