@@ -32,7 +32,12 @@
 *   **Automated Batch Processing:** Created Python functions to dynamically parse and aggregate data from multiple battery datasets simultaneously.
 *   **Comparative Analysis:** Analyzed performance variance across different physical cells to identify "Strong" vs "Weak" batteries.
 *   **Remaining Useful Life (RUL) Prediction:** Integrated linear regression algorithms to forecast the precise cycle number where battery health will cross the critical 70% threshold.
-*   
+
+# ⚡ Interactive EEE Python Journey 
+
+*A creative, interactive web application exploring Electrical & Electronic Engineering concepts using all the previous codes from here, and with the help of Google's Antigravity.*
+👉 **[Link for the webapp!](https://applied-eee-python-lab-jcwfypjz7e5vlan3mmod5v.streamlit.app/)**
+
 ## 🛠 Tools Used
 *   **Language:** Python 3.12+
 *   **Libraries:** NumPy, Pandas, Matplotlib, SciPy
