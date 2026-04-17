@@ -95,11 +95,71 @@ else:
                     metric_col3.metric("Predicted EOL Cycle", f"Cycle {int(predicted_cycle)}")
                 else:
                     metric_col3.metric("Predicted EOL Cycle", "N/A or Already Dead")
-                    
                 with st.expander("Show Regression Statistics"):
                     st.write(f"R-squared: {r_value**2:.4f}")
                     st.write(f"Standard Error: {std_err:.4f}")
                     st.write(f"Equation: SOH = {slope:.4f} * Cycle + {intercept:.4f}")
+                        
+            st.divider()
+            st.subheader("🔋 EV Battery Pack Life Extension Simulation")
+            st.markdown("Simulating a battery pack built from the selected batteries. It compares a standard **Unbalanced Pack** (limited by the weakest cell) with a **Proportional Active Balanced Pack** (redistributing charge).")
+            
+            if len(selected_files) > 1:
+                # Add algorithm parameter controls
+                sim_col1, sim_col2, sim_col3 = st.columns(3)
+                kp = sim_col1.slider("Proportional Gain (Kp)", 0.1, 1.0, 0.5, step=0.1)
+                efficiency = sim_col2.slider("Transfer Efficiency", 0.5, 1.0, 0.90, step=0.05)
+                safety_limit = sim_col3.slider("Max Transfer Limit (%)", 0.1, 5.0, 1.0, step=0.1)
+
+                num_cycles = min([len(results[f]) for f in selected_files])
+                unbalanced_pack_history = []
+                balanced_pack_history = []
+
+                # --- THE LIFECYCLE SIMULATOR ---
+                for cycle in range(num_cycles):
+                    cells_today = np.array([results[f][cycle] for f in selected_files])
                     
+                    # Standard EV (No Balancing) -> Fails as soon as the worst cell hits empty.
+                    unbalanced_pack_history.append(np.min(cells_today))
+                    
+                    # YOUR PROPORTIONAL (Kp) BALANCER ALGORITHM 
+                    sim_cells = cells_today.copy()
+                    
+                    steps = 0
+                    while np.max(sim_cells) - np.min(sim_cells) > 0.1 and steps < 50:
+                        source_idx = np.argmax(sim_cells)
+                        target_idx = np.argmin(sim_cells)
+                        
+                        delta = np.max(sim_cells) - np.min(sim_cells)
+                        dynamic_packet = kp * delta
+                        packet = min(dynamic_packet, safety_limit) # Hardware Cap applied!
+                        
+                        # Power transfer
+                        sim_cells[source_idx] -= packet
+                        sim_cells[target_idx] += (packet * efficiency) 
+                        
+                        steps += 1
+                        
+                    # Record how healthy the new Kp Balanced Pack is
+                    balanced_pack_history.append(np.min(sim_cells))
+
+                sim_fig = go.Figure()
+                sim_fig.add_trace(go.Scatter(x=list(range(num_cycles)), y=unbalanced_pack_history, 
+                                             mode='lines', name='Standard Unbalanced Pack', 
+                                             line=dict(color='red', width=2)))
+                sim_fig.add_trace(go.Scatter(x=list(range(num_cycles)), y=balanced_pack_history, 
+                                             mode='lines', name='Our Proportional Active Pack',
+                                             line=dict(color='blue', width=2)))
+
+                sim_fig.add_hline(y=eol_threshold, line_dash="dash", line_color="gray", annotation_text=f"EOL Threshold ({eol_threshold}%)")
+                
+                sim_fig.update_layout(title="EV Battery Pack Remaining Useful Life Extension",
+                                      xaxis_title="Discharge Cycle",
+                                      yaxis_title="Usable Pack SOH (%)")
+                
+                st.plotly_chart(sim_fig, use_container_width=True)
+            else:
+                st.warning("Please select at least two batteries to simulate a battery pack.")
+
         else:
             st.info("Please select at least one battery to begin the analysis.")

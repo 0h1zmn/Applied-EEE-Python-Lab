@@ -1,0 +1,300 @@
+﻿#import necessary libraries
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+from scipy.io import loadmat
+
+from scipy.integrate import trapezoid
+
+from scipy.stats import linregress
+# Function to extract battery capacity and calculate SOH
+
+
+
+def get_battery_capacity(B0005):
+
+    print(f"Analyzing battery data from {B0005}...")
+
+
+
+    # Load the .mat file and extract the relevant data
+
+    mat_data = loadmat(B0005)
+
+    battery_id = B0005.split('.')[0]
+
+    raw_data = mat_data[battery_id]
+
+    cycles = raw_data[0, 0]['cycle']
+
+
+
+    # Identify discharge cycles and calculate SOH for each cycle
+
+    discharge_indices = []
+
+    for i in range(len(cycles[0])):
+
+        if cycles[0][i]['type'][0] == 'discharge':
+
+            discharge_indices.append(i)
+
+    
+
+    soh_history = []
+
+    for idx in discharge_indices:
+
+        cycle_data = cycles[0, idx]
+
+        measurements = cycle_data['data'][0, 0]
+
+        current = measurements['Current_measured'].flatten()
+
+        time_sec = measurements['Time'].flatten()
+
+        capacity = trapezoid(abs(current), time_sec) / 3600
+
+        rated_capaity = 2
+
+        soh = (capacity / rated_capaity) * 100
+
+        soh_history.append(soh)
+
+    return soh_history
+
+
+
+# Comparative analysis of battery degradation across multiple batteries
+
+results = {}
+
+battery_files = ['B0005.mat', 'B0006.mat', 'B0007.mat', 'B0018.mat']
+
+
+
+#plotting the results
+
+plt.figure(figsize=(10, 6))
+
+for f in battery_files:
+
+    soh = get_battery_capacity(f)
+
+    results[f] = soh
+
+    print("Dictionary rebuilt. Keys available:", results.keys())
+
+    plt.plot(soh, label=f)
+
+
+
+plt.title("Comparative Degradation Analysis (NASA Battery Batch)")
+
+plt.xlabel("Discharge Cycle")
+
+plt.ylabel("State of Health (%)")
+
+plt.axhline(y=70, color='red', linestyle='--', label='EOL Threshold')
+
+plt.legend()
+
+plt.grid(True)
+
+plt.show()
+# Predictive maintenance for battery B0007
+
+target_file = 'B0007.mat'
+
+soh_data = results[target_file]
+
+cycles = range(1, len(soh_data) + 1)
+
+slope, intercept, r_value, p_value, std_err = linregress(cycles, soh_data)
+
+
+
+# Predicting the end of life cycle based on the linear regression model
+
+print(f"Linear Regression for {target_file}:")
+
+print(f"Degradation Rate: {slope:.4f} % per cycle")
+
+print(f"Current State of Health: {soh_data[-1]:.2f}%")
+
+predicted_eol_cycle = (70 - intercept) / slope
+
+print(f"Predicted End of Life Cycle: Cycle {int(predicted_eol_cycle)}")
+
+
+
+# Visualize the predictive maintenance results
+
+plt.figure(figsize=(10, 6))
+
+plt.plot(cycles, soh_data, label='Actual Data', color = 'green')
+
+future_cycles = list(range(1, 250))        # Extend the cycle range for better visualization of the prediction
+
+plt.axhline(y=70, color='red', linestyle='--', label='Threshold')
+
+
+
+# Mark the predicted death point
+
+plt.plot(predicted_eol_cycle, 70, 'ro', label=f'Death @ {int(predicted_eol_cycle)}')
+
+
+
+plt.title(f"Predictive Maintenance: {target_file}")
+
+plt.xlabel("Cycle")
+
+plt.ylabel("SOH (%)")
+
+plt.legend()
+
+plt.grid(True)
+
+plt.show()
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+
+
+# ==========================================
+
+# 1. GRAB THE DATA FROM YOUR DICTIONARY!
+
+soh_b05 = results['B0005.mat']
+
+soh_b06 = results['B0006.mat']
+
+soh_b07 = results['B0007.mat']
+
+soh_b18 = results['B0018.mat']
+
+# ==========================================
+
+
+
+# 2. AUTO-CALCULATE SIMULATION LENGTH (Crash Prevention!)
+
+# We stop the simulation when the shortest NASA dataset ends (B0018)
+
+num_cycles = min(len(soh_b05), len(soh_b06), len(soh_b07), len(soh_b18)) 
+
+
+
+unbalanced_pack_history = []
+
+balanced_pack_history =[]
+
+
+
+# Our Custom Kp Algorithm Settings
+
+Kp = 0.5 
+
+efficiency = 0.90 # Simulating physical heat/wire loss
+
+safety_limit = 1.0 # Max capacity we allow to move in a single step
+
+
+
+# --- THE LIFECYCLE SIMULATOR ---
+
+for cycle in range(num_cycles):
+
+    # Grab the true NASA physical capacities for today's cycle
+
+    cells_today = np.array([soh_b05[cycle], soh_b06[cycle], soh_b07[cycle], soh_b18[cycle]])
+
+    
+
+    # Standard EV (No Balancing) -> Fails as soon as the worst cell hits empty.
+
+    unbalanced_pack_history.append(np.min(cells_today))
+
+    
+
+    # ---------------------------------------------
+
+    # YOUR PROPORTIONAL (Kp) BALANCER ALGORITHM 
+
+    sim_cells = cells_today.copy()
+
+    
+
+    steps = 0
+
+    # Stop condition (within 0.1% balanced)
+
+    while np.max(sim_cells) - np.min(sim_cells) > 0.1 and steps < 50:
+
+        source_idx = np.argmax(sim_cells)
+
+        target_idx = np.argmin(sim_cells)
+
+        
+
+        delta = np.max(sim_cells) - np.min(sim_cells)
+
+        
+
+        dynamic_packet = Kp * delta
+
+        packet = min(dynamic_packet, safety_limit) # Hardware Cap applied!
+
+        
+
+        # Power transfer
+
+        sim_cells[source_idx] -= packet
+
+        sim_cells[target_idx] += (packet * efficiency) 
+
+        
+
+        steps += 1
+
+    # ---------------------------------------------
+
+    
+
+    # Record how healthy the new Kp Balanced Pack is
+
+    balanced_pack_history.append(np.min(sim_cells))
+
+
+
+
+
+# --- PLOT THE DISCOVERY ---
+
+plt.figure(figsize=(10, 6))
+
+plt.plot(unbalanced_pack_history, label='Standard Unbalanced Pack', color='red', linewidth=2)
+
+plt.plot(balanced_pack_history, label='Our Proportional Active Pack', color='blue', linewidth=2)
+
+
+
+plt.axhline(y=70, color='black', linestyle='--', label='End-of-Life (EOL) Threshold (70%)')
+
+
+
+plt.title('Figure 2: EV Battery Pack Remaining Useful Life Extension')
+
+plt.xlabel('Discharge Cycle (Time)')
+
+plt.ylabel('Usable Pack SOH (%)')
+
+plt.legend()
+
+plt.grid(True)
+
+plt.show()
